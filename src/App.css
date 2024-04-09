@@ -36,3 +36,34 @@
     transform: rotate(360deg);
   }
 }
+
+.App-input {
+  width: 80%;
+  height: 100px;
+  margin-top: 0px;
+  padding: 10px;
+  font-size: 16px;
+  border: 2px solid #61dafb;
+  border-radius: 4px;
+  background-color: #fff;
+  color: #333;
+  resize: vertical; /* Allows vertical resizing, remove if not desired */
+  overflow-wrap: break-word;
+  /* Ensure there's no white-space: nowrap; here */
+}
+
+.App-convert-button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  font-size: 16px;
+  color: #fff;
+  background-color: #61dafb; /* Match the link color for consistency */
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.App-convert-button:hover {
+  background-color: #4a9fb3; /* A darker shade for hover effect */
+}
