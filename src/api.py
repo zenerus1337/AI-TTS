@@ -20,7 +20,7 @@ def convert_text_to_speech():
     tts = TTS("tts_models/en/ljspeech/tacotron2-DDC").to(device)
 
     # Generate speech and save to a file
-    file_path = "output.wav"
+    file_path = os.path.join(os.getcwd(), "output.wav")
     tts.tts_to_file(text=text, file_path=file_path)
 
     # Return the generated file
