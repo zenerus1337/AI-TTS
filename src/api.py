@@ -7,6 +7,8 @@ from TTS.api import TTS
 from PyPDF2 import PdfReader
 import mammoth
 from io import BytesIO
+import tempfile
+from pydub import AudioSegment
 
 app = Flask(__name__)
 CORS(app)
@@ -30,13 +32,59 @@ elevenlabs_voices = {
     'pl': ['Pid5DJleNF2sxsuF6YKD', 'DK2oYoQ3lTA1UXL843GC']
 }
 
+def split_text(text, max_sentences=4, max_symbols=200):
+    sentences = text.split('. ')
+    chunks = []
+    current_chunk = []
+    current_length = 0
+    current_sentences = 0
+
+    for sentence in sentences:
+        sentence_length = len(sentence)
+        if current_sentences < max_sentences and current_length + sentence_length <= max_symbols:
+            current_chunk.append(sentence)
+            current_length += sentence_length
+            current_sentences += 1
+        else:
+            chunks.append('. '.join(current_chunk) + '.')
+            current_chunk = [sentence]
+            current_length = sentence_length
+            current_sentences = 1
+
+    if current_chunk:
+        chunks.append('. '.join(current_chunk) + '.')
+
+    return chunks
+
 @app.route('/convert', methods=['POST'])
 def convert_text_to_speech():
-    api_type = request.values.get('apiType', 'TTS')
-    language = request.values.get('language', 'en')
-    model_or_voice = request.values.get('model', 'default') if api_type == 'TTS' else request.values.get('voice', None)
-    model_id = request.values.get('model_id', None)
-    text = request.values.get('text', '')
+    # Sprawdź typ zawartości żądania
+    content_type = request.headers.get('Content-Type', '')
+
+    if 'application/json' in content_type:
+        data = request.get_json()
+        text = data.get('text', '')
+    elif 'multipart/form-data' in content_type:
+        text = request.values.get('text', '')
+        if 'file' in request.files:
+            file = request.files['file']
+            file_type = file.filename.split('.')[-1].lower()
+            if file_type == 'pdf':
+                reader = PdfReader(file)
+                text = ''.join([page.extract_text() or "" for page in reader.pages])
+            elif file_type == 'docx':
+                buffer = BytesIO(file.read())
+                result = mammoth.extract_raw_text(buffer)
+                text = result.value
+            elif file_type == 'txt':
+                text = file.read().decode('utf-8')
+    else:
+        return jsonify({'error': 'Unsupported Media Type'}), 415
+    
+    api_type = request.json.get('apiType', 'TTS')
+    language = request.json.get('language', 'en')
+    model_or_voice = request.json.get('model', 'default') if api_type == 'TTS' else request.json.get('voice', None)
+    model_id = request.json.get('model_id', None)
 
     if 'file' in request.files:
         file = request.files['file']
