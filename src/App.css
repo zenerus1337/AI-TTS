@@ -1,9 +1,25 @@
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+}
+
 .App {
   text-align: center;
+  display: flex; /* Ensures flex layout to help fill the screen */
+  flex-direction: column; /* Stacks children vertically */
+  align-items: center; /* Centers items horizontally */
+  justify-content: center; /* Centers items vertically */
+  min-height: 100vh; /* Ensures the app fills the full height of the viewport */
+  width: 100vw; /* Ensures the app fills the full width of the viewport */
+  margin: 0; /* Removes default margin */
+  padding: 0; /* Removes default padding */
+  box-sizing: border-box; /* Ensures border or padding don't overflow */
 }
 
 .App-logo {
-  height: 40vmin;
+  height: 20vmin;
   pointer-events: none;
 }
 
@@ -15,13 +31,16 @@
 
 .App-header {
   background-color: #282c34;
-  min-height: 100vh;
+  width: 100%; /* Full width */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
+  padding: 20px; /* Adjusted padding */
+  box-sizing: border-box; /* Ensures padding does not add to the width */
+  flex: 1; /* Takes available space */
 }
 
 .App-link {
@@ -40,24 +59,23 @@
 .App-input {
   width: 80%;
   height: 100px;
-  margin-top: 0px;
+  margin-top: 10px;
   padding: 10px;
   font-size: 16px;
   border: 2px solid #61dafb;
   border-radius: 4px;
   background-color: #fff;
   color: #333;
-  resize: vertical; /* Allows vertical resizing, remove if not desired */
+  resize: vertical;
   overflow-wrap: break-word;
-  /* Ensure there's no white-space: nowrap; here */
 }
 
 .App-convert-button {
-  margin-top: 20px;
+  margin-top: 10px;
   padding: 10px 20px;
   font-size: 16px;
   color: #fff;
-  background-color: #61dafb; /* Match the link color for consistency */
+  background-color: #61dafb;
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -65,5 +83,11 @@
 }
 
 .App-convert-button:hover {
-  background-color: #4a9fb3; /* A darker shade for hover effect */
+  background-color: #4a9fb3;
+}
+
+.App-status-message {
+  margin-top: 10px;
+  color: #aad4e5;
+  font-size: 1.2rem;
 }
