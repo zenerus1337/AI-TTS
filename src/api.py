@@ -32,22 +32,17 @@ elevenlabs_voices = {
 
 @app.route('/convert', methods=['POST'])
 def convert_text_to_speech():
-    if request.json:
-        api_type = request.json.get('apiType', 'TTS')
-        language = request.json.get('language', 'en')
-        model_or_voice = request.json.get('model', 'default') if api_type == 'TTS' else request.json.get('voice', None)
-        model_id = request.json.get('model_id', None)
-        text = request.json.get('text', '')
-    else:
-        api_type = request.form.get('apiType', 'TTS')
-        language = request.form.get('language', 'en')
-        model_or_voice = request.form.get('model', 'default') if api_type == 'TTS' else request.form.get('voice', None)
-        model_id = request.form.get('model_id', None)
-        text = ""
+    api_type = request.values.get('apiType', 'TTS')
+    language = request.values.get('language', 'en')
+    model_or_voice = request.values.get('model', 'default') if api_type == 'TTS' else request.values.get('voice', None)
+    model_id = request.values.get('model_id', None)
+    text = request.values.get('text', '')
 
     if 'file' in request.files:
         file = request.files['file']
+        print("Received file:", file.filename)
         file_type = file.filename.split('.')[-1].lower()
+        print("File extension:", file_type)
         if file_type == 'pdf':
             reader = PdfReader(file)
             text = ''.join([page.extract_text() or "" for page in reader.pages])
