@@ -8,6 +8,7 @@ function App() {
   const [language, setLanguage] = useState("en");
   const [modelOrVoice, setModelOrVoice] = useState("default");
   const [statusMessage, setStatusMessage] = useState("");
+  const [apiKey] = useState("42659e288ccfa8b1e5aa4881e52b7fd7"); // Set the API key as a static value
 
   const ttsModels = {
     'en': [
@@ -28,7 +29,8 @@ function App() {
     ],
     'pl': [
       { name: "Aneta", id: "Pid5DJleNF2sxsuF6YKD" },
-      { name: "Adygeusz", id: "DK2oYoQ3lTA1UXL843GC" }
+      { name: "Adygeusz", id: "DK2oYoQ3lTA1UXL843GC" },
+      { name: "Przemek", id: "KziPYiGoJuECE51R7lYo" }
     ]
   };
 
@@ -58,7 +60,8 @@ function App() {
     const payload = {
       text: text,
       language: language,
-      apiType: apiType
+      apiType: apiType,
+      api_key: apiKey // Include the API key in the payload
     };
     if (apiType === "TTS") {
       payload.model = modelOrVoice;
@@ -92,14 +95,15 @@ function App() {
     formData.append('file', file);
     formData.append('language', language);
     formData.append('apiType', apiType);
-  
+    formData.append('api_key', apiKey); // Include the API key in the form data
+
     if (apiType === "TTS") {
       formData.append('model', modelOrVoice);
     } else {
       formData.append('voice', modelOrVoice);
       formData.append('model_id', language === "en" ? "eleven_turbo_v2" : "eleven_multilingual_v2");
     }
-  
+
     fetch("http://localhost:5000/convert", {
       method: "POST",
       body: formData // Do not set 'Content-Type' manually here
@@ -115,7 +119,6 @@ function App() {
       setStatusMessage("Failed to convert file to speech.");
     });
   };
-  
 
   const getModelOrVoiceOptions = () => {
     return apiType === "TTS" ? ttsModels[language] : elevenLabsVoices[language];
