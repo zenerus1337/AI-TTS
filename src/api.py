@@ -3,6 +3,8 @@ from flask_cors import CORS
 import torch
 import os
 import requests
+import time
+import uuid
 from TTS.api import TTS
 from PyPDF2 import PdfReader
 import mammoth
@@ -120,20 +122,29 @@ def handle_tts_api(text, language, model):
         
         for i, chunk in enumerate(chunks):
             print(f"Processing chunk {i+1}/{len(chunks)}")
-            with tempfile.NamedTemporaryFile(delete=False, suffix='.wav') as temp_chunk_file:
+            unique_filename = f"temp_{uuid.uuid4()}.wav"
+            with tempfile.NamedTemporaryFile(delete=False, suffix='.wav', prefix=unique_filename) as temp_chunk_file:
                 tts.tts_to_file(text=chunk, file_path=temp_chunk_file.name)
+                temp_chunk_file.close()
+                time.sleep(0.1)  
                 audio_segment = AudioSegment.from_wav(temp_chunk_file.name)
                 audio_segments.append(audio_segment)
-                os.remove(temp_chunk_file.name)
+                time.sleep(0.1)  
+                try:
+                    os.remove(temp_chunk_file.name)
+                except PermissionError:
+                    print(f"Could not remove temporary file: {temp_chunk_file.name}")
         
         print("Merging audio segments")
         final_audio = sum(audio_segments)
 
         print("Exporting final audio")
-        with tempfile.NamedTemporaryFile(delete=False, suffix='.wav') as final_temp_file:
+        unique_final_filename = f"final_{uuid.uuid4()}.wav"
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.wav', prefix=unique_final_filename) as final_temp_file:
             final_audio.export(final_temp_file.name, format="wav")
-        
-        return send_file(final_temp_file.name, as_attachment=True)
+            final_temp_file.close()
+            time.sleep(0.1)  
+            return send_file(final_temp_file.name, as_attachment=True)
     except Exception as e:
         print("Error during TTS synthesis:", e)
         return jsonify({'error': 'Error during TTS synthesis'}), 500

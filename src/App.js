@@ -8,7 +8,7 @@ function App() {
   const [language, setLanguage] = useState("en");
   const [modelOrVoice, setModelOrVoice] = useState("default");
   const [statusMessage, setStatusMessage] = useState("");
-  const [apiKey] = useState("42659e288ccfa8b1e5aa4881e52b7fd7"); // Set the API key as a static value
+  const [apiKey] = useState("42659e288ccfa8b1e5aa4881e52b7fd7"); 
 
   const ttsModels = {
     'en': [
@@ -61,7 +61,7 @@ function App() {
       text: text,
       language: language,
       apiType: apiType,
-      api_key: apiKey // Include the API key in the payload
+      api_key: apiKey 
     };
     if (apiType === "TTS") {
       payload.model = modelOrVoice;
@@ -95,7 +95,7 @@ function App() {
     formData.append('file', file);
     formData.append('language', language);
     formData.append('apiType', apiType);
-    formData.append('api_key', apiKey); // Include the API key in the form data
+    formData.append('api_key', apiKey); 
 
     if (apiType === "TTS") {
       formData.append('model', modelOrVoice);
@@ -106,7 +106,7 @@ function App() {
 
     fetch("http://localhost:5000/convert", {
       method: "POST",
-      body: formData // Do not set 'Content-Type' manually here
+      body: formData 
     })
     .then(response => response.blob())
     .then(blob => {
